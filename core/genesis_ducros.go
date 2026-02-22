@@ -112,24 +112,16 @@ func DefaultDucrosTestnetGenesisBlock() *Genesis {
 		Mixhash:    common.Hash{},
 		Coinbase:   common.Address{},
 		BaseFee:    big.NewInt(params.InitialBaseFee),
-		Alloc:      types.GenesisAlloc{
-			"C1dA1A32d74d268eF4aAA12561dcD9a8b374146E": {
-				"balance": "30000000000000000000000000",
-			},
-			"5f2f91b9d446eA92784fe4B2adF32236219de6c3": {
-				"balance": "15000000000000000000000000",
-			},
-			"e249b5c46b43e6796c2F26999A2C00D47Dc49D1f": {
-				"balance": "10000000000000000000000000",
-			},
-			"b8B4180fe9564528432ff93a88aC15a61FdcC4Da": {
-				"balance": "15000000000000000000000000",
-			},
-			"87B33f4Ba0919bf0E98358468BA7FA33Dc349Ac2": {
-				"balance": "5000000000000000000000000",
-			},
-		},
+		Alloc:      types.GenesisAlloc{},
 	}
 }
 
 func newUint64(val uint64) *uint64 { return &val }
+
+func mustBig(s string) *big.Int {
+    n, ok := new(big.Int).SetString(s, 10)
+    if !ok {
+        panic("invalid big int: " + s)
+    }
+    return n
+}
