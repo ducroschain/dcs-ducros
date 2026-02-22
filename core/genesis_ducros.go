@@ -72,21 +72,11 @@ func DefaultDucrosGenesisBlock() *Genesis {
 		Coinbase:   common.Address{},
 		BaseFee:    big.NewInt(params.InitialBaseFee),
 		Alloc:      types.GenesisAlloc{
-			"C1dA1A32d74d268eF4aAA12561dcD9a8b374146E": {
-				"balance": "30000000000000000000000000",
-			},
-			"5f2f91b9d446eA92784fe4B2adF32236219de6c3": {
-				"balance": "15000000000000000000000000",
-			},
-			"e249b5c46b43e6796c2F26999A2C00D47Dc49D1f": {
-				"balance": "10000000000000000000000000",
-			},
-			"b8B4180fe9564528432ff93a88aC15a61FdcC4Da": {
-				"balance": "15000000000000000000000000",
-			},
-			"87B33f4Ba0919bf0E98358468BA7FA33Dc349Ac2": {
-				"balance": "5000000000000000000000000",
-			},
+    		common.HexToAddress("0xC1dA1A32d74d268eF4aAA12561dcD9a8b374146E"): {Balance: mustBig("30000000000000000000000000")},
+    		common.HexToAddress("0x5f2f91b9d446eA92784fe4B2adF32236219de6c3"): {Balance: mustBig("15000000000000000000000000")},
+    		common.HexToAddress("0xe249b5c46b43e6796c2F26999A2C00D47Dc49D1f"): {Balance: mustBig("10000000000000000000000000")},
+    		common.HexToAddress("0xb8B4180fe9564528432ff93a88aC15a61FdcC4Da"): {Balance: mustBig("15000000000000000000000000")},
+    		common.HexToAddress("0x87B33f4Ba0919bf0E98358468BA7FA33Dc349Ac2"): {Balance: mustBig("5000000000000000000000000")},
 		},
 	}
 }
