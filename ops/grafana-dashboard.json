@@ -1,0 +1,136 @@
+{
+  "dashboard": {
+    "title": "Ducros Network - Production Monitoring",
+    "tags": ["ducros", "blockchain", "randomx"],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 1,
+    "refresh": "30s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Block Height",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "chain_head_block",
+            "legendFormat": "{{instance}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Peer Count",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "p2p_peers",
+            "legendFormat": "{{instance}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Block Time (seconds)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(chain_head_block[5m]) * 60",
+            "legendFormat": "Block/min"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "id": 4,
+        "title": "Difficulty",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "chain_head_difficulty",
+            "legendFormat": "{{instance}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      },
+      {
+        "id": 5,
+        "title": "Hashrate (H/s)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "miner_hashrate",
+            "legendFormat": "{{instance}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+      },
+      {
+        "id": 6,
+        "title": "TX Pool (Pending)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "txpool_pending",
+            "legendFormat": "{{instance}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+      },
+      {
+        "id": 7,
+        "title": "Gas Price (Gwei)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "chain_head_basefee / 1000000000",
+            "legendFormat": "Base Fee"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24}
+      },
+      {
+        "id": 8,
+        "title": "Memory Usage (GB)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "go_memstats_alloc_bytes / 1024 / 1024 / 1024",
+            "legendFormat": "{{instance}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24}
+      },
+      {
+        "id": 9,
+        "title": "RPC Requests/sec",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(rpc_requests[5m])",
+            "legendFormat": "{{method}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 32}
+      },
+      {
+        "id": 10,
+        "title": "Network I/O (MB/s)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(p2p_ingress[5m]) / 1024 / 1024",
+            "legendFormat": "Ingress"
+          },
+          {
+            "expr": "rate(p2p_egress[5m]) / 1024 / 1024",
+            "legendFormat": "Egress"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 32}
+      }
+    ]
+  }
+}

@@ -1,0 +1,175 @@
+# Prometheus alerting rules for Ducros Network
+
+groups:
+  - name: ducros_alerts
+    interval: 30s
+    rules:
+      # Node health
+      - alert: NodeDown
+        expr: up{job="geth"} == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Geth node {{ $labels.instance }} is down"
+          description: "Node has been down for more than 5 minutes"
+
+      - alert: LowPeerCount
+        expr: p2p_peers < 3
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low peer count on {{ $labels.instance }}"
+          description: "Node has less than 3 peers for 10 minutes"
+
+      - alert: NoPeers
+        expr: p2p_peers == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "No peers on {{ $labels.instance }}"
+          description: "Node has no connected peers"
+
+      # Sync status
+      - alert: NodeNotSyncing
+        expr: chain_head_block - chain_head_header > 100
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Node {{ $labels.instance }} not syncing"
+          description: "Block import is lagging behind headers"
+
+      - alert: ChainStalled
+        expr: rate(chain_head_block[5m]) == 0
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Chain stalled on {{ $labels.instance }}"
+          description: "No new blocks for 10 minutes"
+
+      # Mining
+      - alert: MiningHashrateDropped
+        expr: (rate(miner_hashrate[5m]) / rate(miner_hashrate[1h]) < 0.5) and (rate(miner_hashrate[1h]) > 0)
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Mining hashrate dropped on {{ $labels.instance }}"
+          description: "Hashrate dropped by more than 50%"
+
+      - alert: MinerNotMining
+        expr: miner_hashrate == 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Miner {{ $labels.instance }} stopped"
+          description: "Miner is not producing hashes"
+
+      # Transaction pool
+      - alert: TxPoolFull
+        expr: txpool_pending > 3000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Transaction pool full on {{ $labels.instance }}"
+          description: "Pending transaction count exceeds 3000"
+
+      - alert: TxPoolStuck
+        expr: rate(txpool_pending[5m]) > 0 and rate(chain_head_block[5m]) == 0
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Transaction pool stuck on {{ $labels.instance }}"
+          description: "Transactions accumulating but no blocks produced"
+
+      # Performance
+      - alert: HighBlockProcessingTime
+        expr: chain_block_insert_time > 5000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow block processing on {{ $labels.instance }}"
+          description: "Block insert time exceeds 5 seconds"
+
+      - alert: HighMemoryUsage
+        expr: go_memstats_alloc_bytes / go_memstats_sys_bytes > 0.9
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage on {{ $labels.instance }}"
+          description: "Memory usage above 90%"
+
+      # Difficulty & consensus
+      - alert: DifficultyAnomaly
+        expr: abs(chain_head_difficulty - avg_over_time(chain_head_difficulty[1h])) / avg_over_time(chain_head_difficulty[1h]) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Difficulty anomaly detected on {{ $labels.instance }}"
+          description: "Current difficulty deviates >50% from 1h average"
+
+      - alert: BlockTimeTooFast
+        expr: rate(chain_head_block[5m]) * 60 > 6
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Blocks producing too fast on {{ $labels.instance }}"
+          description: "Block time < 10 seconds (target: 13s)"
+
+      - alert: BlockTimeTooSlow
+        expr: rate(chain_head_block[5m]) * 60 < 3
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Blocks producing too slow on {{ $labels.instance }}"
+          description: "Block time > 20 seconds (target: 13s)"
+
+      # RPC
+      - alert: HighRPCLatency
+        expr: histogram_quantile(0.95, rate(rpc_duration_seconds_bucket[5m])) > 1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High RPC latency on {{ $labels.instance }}"
+          description: "95th percentile RPC latency > 1 second"
+
+      - alert: RPCErrorRate
+        expr: rate(rpc_failure[5m]) / rate(rpc_requests[5m]) > 0.05
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High RPC error rate on {{ $labels.instance }}"
+          description: "RPC error rate exceeds 5%"
+
+      # System
+      - alert: DiskSpaceLow
+        expr: node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"} < 0.1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Low disk space on {{ $labels.instance }}"
+          description: "Less than 10% disk space remaining"
+
+      - alert: HighCPUUsage
+        expr: 100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage above 90% for 15 minutes"

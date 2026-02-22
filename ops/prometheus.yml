@@ -1,0 +1,55 @@
+# Prometheus configuration for Ducros Network monitoring
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'ducros-network'
+    network: 'mainnet'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093
+
+# Load rules once and periodically evaluate them
+rule_files:
+  - "alerts.yml"
+
+# Scrape configurations
+scrape_configs:
+  # Geth metrics
+  - job_name: 'geth'
+    static_configs:
+      - targets: ['localhost:6060']
+        labels:
+          instance: 'geth-node-1'
+          role: 'full-node'
+
+  # Add more nodes here
+  - job_name: 'geth-miner'
+    static_configs:
+      - targets: ['miner1:6060', 'miner2:6060']
+        labels:
+          role: 'miner'
+
+  # Stratum proxy metrics (if implemented)
+  - job_name: 'stratum-proxy'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          role: 'mining-proxy'
+
+  # Node exporter for system metrics
+  - job_name: 'node'
+    static_configs:
+      - targets: ['localhost:9100']
+        labels:
+          instance: 'server-1'
+
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']

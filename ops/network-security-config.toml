@@ -1,0 +1,105 @@
+# Ducros Network Production Security Configuration
+# Place this file at: ~/.ethereum/config.toml or specify with --config flag
+
+[Eth]
+NetworkId = 33669
+SyncMode = "full"
+NoPruning = false
+NoPrefetch = false
+LightPeers = 100
+UltraLightFraction = 75
+
+# Database cache and memory settings
+[Eth.TxPool]
+Locals = []
+NoLocals = false
+Journal = "transactions.rlp"
+Rejournal = 3600000000000  # 1 hour in nanoseconds
+PriceLimit = 1000000000     # 1 Gwei minimum gas price
+PriceBump = 10              # 10% price bump for replacement
+AccountSlots = 16           # Max txs per account in pending
+GlobalSlots = 4096          # Max pending transactions globally
+AccountQueue = 64           # Max queued txs per account
+GlobalQueue = 1024          # Max queued transactions globally
+Lifetime = 10800000000000   # 3 hours max lifetime
+
+[Eth.GPO]
+Blocks = 20
+Percentile = 60
+MaxHeaderHistory = 1024
+MaxBlockHistory = 1024
+MaxPrice = 500000000000     # 500 Gwei max suggested price
+IgnorePrice = 1000000000    # 1 Gwei floor price
+
+# Mining configuration (for miners)
+[Eth.Miner]
+GasFloor = 8000000
+GasCeil = 8000000
+GasPrice = 1000000000       # 1 Gwei
+Recommit = 13000000000      # 13 seconds
+Noverify = false
+
+# Ethash/RandomX (not used, but kept for compatibility)
+[Eth.Ethash]
+CacheDir = "ethash"
+CachesInMem = 2
+CachesOnDisk = 3
+CachesLockMmap = false
+DatasetDir = "ethash"
+DatasetsInMem = 1
+DatasetsOnDisk = 2
+DatasetsLockMmap = false
+PowMode = 0
+
+# Networking and P2P
+[Node]
+DataDir = ""
+InsecureUnlockAllowed = false
+NoUSB = false
+IPCPath = "geth.ipc"
+HTTPHost = "localhost"
+HTTPPort = 8545
+HTTPCors = ["*"]  # PRODUCTION: Restrict to specific origins
+HTTPVirtualHosts = ["localhost"]
+HTTPModules = ["eth", "net", "web3", "txpool", "randomx"]
+WSHost = "localhost"
+WSPort = 8546
+WSOrigins = ["*"]  # PRODUCTION: Restrict to specific origins
+WSModules = ["eth", "net", "web3"]
+GraphQLCors = ["*"]
+GraphQLVirtualHosts = ["localhost"]
+
+[Node.P2P]
+MaxPeers = 50               # Maximum number of connected peers
+NoDiscovery = false
+# BootstrapNodes: Add your production bootnodes here
+BootstrapNodes = []
+# StaticNodes: Trusted nodes that are always connected
+StaticNodes = []
+# TrustedNodes: Peers that bypass connection limits
+TrustedNodes = []
+ListenAddr = ":30303"
+EnableMsgEvents = false
+
+# Database and performance
+[Node.HTTPTimeouts]
+ReadTimeout = 30000000000   # 30 seconds
+WriteTimeout = 30000000000  # 30 seconds
+IdleTimeout = 120000000000  # 2 minutes
+
+# Metrics and monitoring
+[Metrics]
+Enabled = true
+HTTP = "127.0.0.1"
+Port = 6060
+EnabledExpensive = true
+EnableInfluxDB = false
+InfluxDBEndpoint = "http://localhost:8086"
+InfluxDBDatabase = "geth"
+InfluxDBUsername = "test"
+InfluxDBPassword = "test"
+InfluxDBTags = "host=localhost"
+EnableInfluxDBV2 = false
+InfluxDBToken = "test-token"
+InfluxDBBucket = "geth"
+InfluxDBOrganization = "geth"
